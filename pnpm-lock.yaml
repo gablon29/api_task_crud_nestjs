@@ -8,6 +8,9 @@ dependencies:
   '@nestjs/common':
     specifier: ^10.0.0
     version: 10.4.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+  '@nestjs/config':
+    specifier: ^3.3.0
+    version: 3.3.0(@nestjs/common@10.4.9)(rxjs@7.8.1)
   '@nestjs/core':
     specifier: ^10.0.0
     version: 10.4.9(@nestjs/common@10.4.9)(@nestjs/platform-express@10.4.9)(reflect-metadata@0.2.2)(rxjs@7.8.1)
@@ -20,6 +23,9 @@ dependencies:
   class-validator:
     specifier: ^0.14.1
     version: 0.14.1
+  dotenv:
+    specifier: ^16.4.7
+    version: 16.4.7
   reflect-metadata:
     specifier: ^0.2.0
     version: 0.2.2
@@ -37,6 +43,9 @@ devDependencies:
   '@nestjs/testing':
     specifier: ^10.0.0
     version: 10.4.9(@nestjs/common@10.4.9)(@nestjs/core@10.4.9)(@nestjs/platform-express@10.4.9)
+  '@types/dotenv':
+    specifier: ^8.2.3
+    version: 8.2.3
   '@types/express':
     specifier: ^5.0.0
     version: 5.0.0
@@ -891,6 +900,19 @@ packages:
       tslib: 2.7.0
       uid: 2.0.2
 
+  /@nestjs/config@3.3.0(@nestjs/common@10.4.9)(rxjs@7.8.1):
+    resolution: {integrity: sha512-pdGTp8m9d0ZCrjTpjkUbZx6gyf2IKf+7zlkrPNMsJzYZ4bFRRTpXrnj+556/5uiI6AfL5mMrJc2u7dB6bvM+VA==}
+    peerDependencies:
+      '@nestjs/common': ^8.0.0 || ^9.0.0 || ^10.0.0
+      rxjs: ^7.1.0
+    dependencies:
+      '@nestjs/common': 10.4.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      dotenv: 16.4.5
+      dotenv-expand: 10.0.0
+      lodash: 4.17.21
+      rxjs: 7.8.1
+    dev: false
+
   /@nestjs/core@10.4.9(@nestjs/common@10.4.9)(@nestjs/platform-express@10.4.9)(reflect-metadata@0.2.2)(rxjs@7.8.1):
     resolution: {integrity: sha512-ZrbnK67U5T1296tmhxYSdsWkZjLe+MX7FGuRtSjkl02INIYA+4lfV+igZjGc+dyhWkkdvmIg3khSfwoBNjxLWg==}
     requiresBuild: true
@@ -1107,6 +1129,13 @@ packages:
 
   /@types/cookiejar@2.1.5:
     resolution: {integrity: sha512-he+DHOWReW0nghN24E1WUqM0efK4kI9oTqDm6XmK8ZPe2djZ90BSNdGnIyCLzCPw7/pogPlGbzI2wHGGmi4O/Q==}
+    dev: true
+
+  /@types/dotenv@8.2.3:
+    resolution: {integrity: sha512-g2FXjlDX/cYuc5CiQvyU/6kkbP1JtmGzh0obW50zD7OKeILVL0NSpPWLXVfqoAGQjom2/SLLx9zHq0KXvD6mbw==}
+    deprecated: This is a stub types definition. dotenv provides its own type definitions, so you do not need this installed.
+    dependencies:
+      dotenv: 16.4.7
     dev: true
 
   /@types/eslint-scope@3.7.7:
@@ -2204,6 +2233,20 @@ packages:
     dependencies:
       esutils: 2.0.3
     dev: true
+
+  /dotenv-expand@10.0.0:
+    resolution: {integrity: sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==}
+    engines: {node: '>=12'}
+    dev: false
+
+  /dotenv@16.4.5:
+    resolution: {integrity: sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==}
+    engines: {node: '>=12'}
+    dev: false
+
+  /dotenv@16.4.7:
+    resolution: {integrity: sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==}
+    engines: {node: '>=12'}
 
   /eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
@@ -3671,7 +3714,6 @@ packages:
 
   /lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
-    dev: true
 
   /log-symbols@4.1.0:
     resolution: {integrity: sha512-8XPvpAA8uyhfteu8pIvQxpJZ7SYYdpUivZpGy6sFsBuKRY/7rQGavedeB8aK+Zkyq6upMFVL/9AW6vOYzfRyLg==}
