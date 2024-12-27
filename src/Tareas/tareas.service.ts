@@ -1,8 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { TareasRepository } from './tareas.repository';
+import { TodoDto } from 'src/Dao/todoDto';
 
 @Injectable()
 export class TodoService {
-  getHello(): string {
-    return 'Hello pagina de tareas!';
+  constructor(private readonly tareasRepository: TareasRepository) {}
+
+  getTareas(): TodoDto[] {
+    return this.tareasRepository.getTareas();
   }
 }
