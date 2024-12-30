@@ -4,15 +4,12 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
-import { NextFunction } from 'express';
+import { NextFunction, Request } from 'express';
 import { Observable } from 'rxjs';
 
 @Injectable()
 export class DateAddedInterceptor implements NestInterceptor {
-  intercept(
-    context: ExecutionContext,
-    next: CallHandler<NextFunction>,
-  ): Observable<any> | Promise<Observable<any>> {
+  intercept<T>(context: ExecutionContext, next: CallHandler<T>): Observable<T> {
     const now = new Date();
     const formattedDate = now.toLocaleDateString('es-AR', {
       year: 'numeric',
@@ -23,8 +20,8 @@ export class DateAddedInterceptor implements NestInterceptor {
       second: '2-digit',
     });
 
-    const request = context.switchToHttp().getRequest();
-    request.now = formattedDate;
+    const request = context.switchToHttp().getRequest<Request>();
+    (request as Request & { now: string }).now = formattedDate;
     return next.handle();
   }
 }
