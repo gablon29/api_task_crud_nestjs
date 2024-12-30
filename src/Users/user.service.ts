@@ -7,6 +7,10 @@ export class UserService {
     return 'Hello user!';
   }
 
+  async getUserByName(name: string): Promise<string> {
+    return `Hello ${name}`;
+  }
+
   postUser(user: UserDto): string {
     try {
       return user.name;

@@ -4,7 +4,12 @@ import { UserController } from './user.controller';
 import { LoggerMiddleware } from '../middlewares/logger.middleware';
 
 @Module({
-  providers: [UserService],
+  providers: [
+    {
+      provide: UserService,
+      useClass: UserService,
+    },
+  ],
   controllers: [UserController],
 })
 export class UserModule implements NestModule {
