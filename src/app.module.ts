@@ -4,6 +4,7 @@ import { TareasModule } from './Tareas/tareas.module';
 import { ConfigModule } from '@nestjs/config';
 import { ConfigurationService } from './config/configuration.service';
 import config from './config/config';
+import { DatabaseModule } from './dataBase/database.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import config from './config/config';
       isGlobal: true,
       load: [config],
     }),
+    DatabaseModule,
     UserModule,
     TareasModule,
   ],
