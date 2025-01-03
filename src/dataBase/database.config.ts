@@ -1,13 +1,8 @@
-import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-@Injectable()
-export class ConfigurationService {
+export class DatabaseConfig {
   constructor(private configService: ConfigService) {}
 
-  getaccessToken(): string {
-    return this.configService.get<string>('TOKEN');
-  }
   getDatabaseHost(): string {
     return this.configService.get<string>('DB_HOST');
   }
@@ -17,7 +12,7 @@ export class ConfigurationService {
   getDatabaseName(): string {
     return this.configService.get<string>('DB_NAME');
   }
-  getDatabaseUser(): string {
+  getDatabaseUsername(): string {
     return this.configService.get<string>('DB_USER');
   }
 }

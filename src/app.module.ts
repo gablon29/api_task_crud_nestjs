@@ -4,7 +4,7 @@ import { TareasModule } from './Tareas/tareas.module';
 import { ConfigModule } from '@nestjs/config';
 import { ConfigurationService } from './config/configuration.service';
 import config from './config/config';
-import { DatabaseModule } from './dataBase/database.module';
+import { TodoModule } from './todo/todo.module';
 
 @Module({
   imports: [
@@ -12,9 +12,9 @@ import { DatabaseModule } from './dataBase/database.module';
       isGlobal: true,
       load: [config],
     }),
-    DatabaseModule,
     UserModule,
     TareasModule,
+    TodoModule,
   ],
   providers: [ConfigurationService],
 })
