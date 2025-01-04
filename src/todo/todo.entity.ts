@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from 'src/Users/user.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Todo {
@@ -8,4 +9,6 @@ export class Todo {
   title: string;
   @Column('boolean')
   completed: boolean;
+  @ManyToOne(() => User, (user) => user.todo_id)
+  user: User;
 }

@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserDto } from 'src/Dao/userDto';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { AuthGuard } from 'src/Auth/auth.guard';
 import { DateAddedInterceptor } from 'src/interceptor/date-added.interceptor';
 
