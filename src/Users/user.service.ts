@@ -8,12 +8,12 @@ export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
-  getHello(): string {
-    return 'Hello user!';
+  async getAllUsers(): Promise<User[]> {
+    return await this.userRepository.find();
   }
 
-  async getUserByName(name: string): Promise<string> {
-    return `Hello ${name}`;
+  async getUserByName(name: string): Promise<User> {
+    return await this.userRepository.findOne({ where: { name } });
   }
 
   getOne(id: string): string {
