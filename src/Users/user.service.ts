@@ -1,22 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { UserDto } from 'src/Dao/userDto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
+  constructor(
+    @InjectRepository(User) private userRepository: Repository<User>,
+  ) {}
   getHello(): string {
     return 'Hello user!';
   }
 
   async getUserByName(name: string): Promise<string> {
     return `Hello ${name}`;
-  }
-
-  postUser(user: UserDto): string {
-    try {
-      return user.name;
-    } catch (error) {
-      throw new Error('Error parsing user');
-    }
   }
 
   getOne(id: string): string {
