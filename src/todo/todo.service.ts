@@ -1,17 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { TodoDto } from 'src/Dao/todoDto';
 import { Todo } from './todo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { File } from './file.entity';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class TodoService {
   constructor(
+    private cloudinaryService: CloudinaryService,
     @InjectRepository(Todo)
     private todoRepository: Repository<Todo>,
-    @InjectRepository(File)
-    private fileRepository: Repository<File>,
   ) {}
 
   async findAll(): Promise<Todo[]> {
@@ -23,7 +22,9 @@ export class TodoService {
     return this.todoRepository.save(todo);
   }
   // para la subida de archivos
-  async createFile(file: any): Promise<void> {
-    return file;
+  async createFile(file: Express.Multer.File) {
+    return this.cloudinaryService.uploadImage(file).catch((error) => {
+      throw new BadRequestException(error);
+    });
   }
 }

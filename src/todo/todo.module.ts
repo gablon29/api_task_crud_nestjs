@@ -4,9 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Todo } from './todo.entity';
 import { File } from './file.entity';
 import { TodoController } from './todo.controllers';
+import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Todo, File])],
+  imports: [TypeOrmModule.forFeature([Todo, File]), CloudinaryModule],
   providers: [TodoService],
   controllers: [TodoController],
 })

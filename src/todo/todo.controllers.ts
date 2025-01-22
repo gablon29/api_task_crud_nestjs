@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -10,10 +11,14 @@ import { TodoService } from './todo.service';
 import { Todo } from './todo.entity';
 import { TodoDto } from 'src/Dao/todoDto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Controller('todo')
 export class TodoController {
-  constructor(private readonly TodoServices: TodoService) {}
+  constructor(
+    private readonly TodoServices: TodoService,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
   @Get()
   async findAll(): Promise<Todo[]> {
@@ -26,8 +31,9 @@ export class TodoController {
   }
   // para la subida de archivos
   @Post('file')
-  @UseInterceptors(FileInterceptor('file'))
-  async creaeteFile(@UploadedFile() file: Express.Multer.File): Promise<void> {
-    return this.TodoServices.createFile(file);
+  @UseInterceptors(FileInterceptor('image'))
+  async creaeteFile(@UploadedFile() file: Express.Multer.File) {
+    const imageUrl = await this.cloudinaryService.uploadImage(file);
+    return imageUrl.url;
   }
 }
