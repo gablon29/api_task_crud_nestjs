@@ -1,7 +1,15 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { Todo } from './todo.entity';
 import { TodoDto } from 'src/Dao/todoDto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('todo')
 export class TodoController {
@@ -15,5 +23,11 @@ export class TodoController {
   @Post()
   async createTodo(@Body() todo: TodoDto): Promise<Todo> {
     return this.TodoServices.create(todo);
+  }
+  // para la subida de archivos
+  @Post('file')
+  @UseInterceptors(FileInterceptor('file'))
+  async creaeteFile(@UploadedFile() file: Express.Multer.File): Promise<void> {
+    return this.TodoServices.createFile(file);
   }
 }
