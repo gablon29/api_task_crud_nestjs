@@ -5,7 +5,7 @@ import { Todo } from 'src/todo/todo.entity';
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-  @Column()
+  @Column({ unique: true })
   name: string;
   @Column()
   email: string;

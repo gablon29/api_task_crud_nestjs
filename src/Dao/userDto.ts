@@ -1,9 +1,17 @@
-import { IsString, IsInt, IsNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsStrongPassword,
+  IsEmail,
+} from 'class-validator';
 
 export class UserDto {
   @IsString()
   @IsNotEmpty()
   name: string;
-  @IsInt()
-  age: number;
+  @IsEmail()
+  email: string;
+  @IsStrongPassword()
+  password: string;
+  todo?: number;
 }
