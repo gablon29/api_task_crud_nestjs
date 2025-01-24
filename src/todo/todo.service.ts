@@ -4,6 +4,7 @@ import { TodoDto } from 'src/Dao/todoDto';
 import { Todo } from './todo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { File } from './file.entity';
 
 @Injectable()
 export class TodoService {
@@ -11,6 +12,8 @@ export class TodoService {
     private cloudinaryService: CloudinaryService,
     @InjectRepository(Todo)
     private todoRepository: Repository<Todo>,
+    @InjectRepository(File)
+    private readonly fileRepository: Repository<File>,
   ) {}
 
   async findAll(): Promise<Todo[]> {

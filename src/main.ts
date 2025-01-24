@@ -6,7 +6,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // habilitamos validationPipe
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
 
   // levantamos el servidor
   // habilitamos cors

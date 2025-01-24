@@ -1,11 +1,7 @@
 import {
-  BadRequestException,
   Body,
   Controller,
-  FileTypeValidator,
   Get,
-  MaxFileSizeValidator,
-  ParseFilePipe,
   Post,
   UploadedFile,
   UseInterceptors,
