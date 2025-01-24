@@ -2,7 +2,10 @@ import {
   BadRequestException,
   Body,
   Controller,
+  FileTypeValidator,
   Get,
+  MaxFileSizeValidator,
+  ParseFilePipe,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -12,6 +15,7 @@ import { Todo } from './todo.entity';
 import { TodoDto } from 'src/Dao/todoDto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { FilePipe } from 'src/pipes/file.pipe';
 
 @Controller('todo')
 export class TodoController {
@@ -32,8 +36,10 @@ export class TodoController {
   // para la subida de archivos
   @Post('file')
   @UseInterceptors(FileInterceptor('image'))
-  async creaeteFile(@UploadedFile() file: Express.Multer.File) {
-    const imageUrl = await this.cloudinaryService.uploadImage(file);
-    return imageUrl.url;
+  async creaeteFile(
+    @UploadedFile(new FilePipe())
+    file: Express.Multer.File,
+  ) {
+    return file;
   }
 }
