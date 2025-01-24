@@ -2,11 +2,11 @@ import { User } from 'src/Users/user.entity';
 import {
   Column,
   Entity,
-  JoinColumn,
   ManyToOne,
-  OneToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { File } from './file.entity';
 
 @Entity()
 export class Todo {
@@ -18,4 +18,6 @@ export class Todo {
   completed: boolean;
   @ManyToOne(() => User, (user) => user.todo_id)
   user: User;
+  @OneToMany(() => File, (file) => file.todo)
+  files: File[];
 }

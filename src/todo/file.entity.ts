@@ -4,6 +4,7 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   JoinColumn,
+  ManyToOne,
 } from 'typeorm';
 import { Todo } from './todo.entity';
 
@@ -15,9 +16,8 @@ export class File {
   name: string;
   @Column('varchar')
   mimType: string;
-  @Column('bytea')
-  data: Buffer;
-  @OneToOne(() => Todo, { cascade: true })
-  @JoinColumn() // file sera la que tenga la clave foranea
+  @Column('varchar')
+  data: string;
+  @ManyToOne(() => Todo, (todo) => todo.files)
   todo: Todo;
 }
