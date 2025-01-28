@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { TodoDto } from 'src/Dao/todoDto';
 import { Todo } from './todo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,6 +14,7 @@ export class TodoService {
     private todoRepository: Repository<Todo>,
     @InjectRepository(File)
     private readonly fileRepository: Repository<File>,
+    private dataSource: DataSource,
   ) {}
 
   async findAll(): Promise<Todo[]> {
