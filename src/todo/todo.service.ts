@@ -27,15 +27,15 @@ export class TodoService {
         const fileCreated = await this.cloudinaryService.uploadImage(
           todoDto.file,
         );
-        const fileRegister: File = await this.fileRepository.save({
+        const fileRegister: File = await manager.save(File, {
           name: fileCreated.original_filename,
           data_url: fileCreated.url,
         });
-        const todo = this.todoRepository.create({
+        const todo = manager.create(Todo, {
           ...todoDto,
           files: [fileRegister],
         });
-        await this.todoRepository.save(todo);
+        await manager.save(Todo, todo);
       })
       .catch((error) => {
         throw new BadRequestException(error);
