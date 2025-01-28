@@ -7,4 +7,5 @@ export class TodoDto {
   @IsString()
   @Length(1, 100)
   description: string;
+  file?: Express.Multer.File;
 }

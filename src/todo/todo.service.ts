@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { TodoDto } from 'src/Dao/todoDto';
 import { Todo } from './todo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,6 +14,7 @@ export class TodoService {
     private todoRepository: Repository<Todo>,
     @InjectRepository(File)
     private readonly fileRepository: Repository<File>,
+    private dataSource: DataSource,
   ) {}
 
   async findAll(): Promise<Todo[]> {
@@ -21,13 +22,24 @@ export class TodoService {
   }
 
   async create(todoDto: TodoDto): Promise<Todo> {
-    const todo = this.todoRepository.create(todoDto);
-    return this.todoRepository.save(todo);
-  }
-  // para la subida de archivos
-  async createFile(file: Express.Multer.File) {
-    return this.cloudinaryService.uploadImage(file).catch((error) => {
-      throw new BadRequestException(error);
-    });
+    this.dataSource
+      .transaction(async (manager: EntityManager) => {
+        const fileCreated = await this.cloudinaryService.uploadImage(
+          todoDto.file,
+        );
+        const fileRegister: File = await this.fileRepository.save({
+          name: fileCreated.original_filename,
+          data_url: fileCreated.url,
+        });
+        const todo = this.todoRepository.create({
+          ...todoDto,
+          files: [fileRegister],
+        });
+        await this.todoRepository.save(todo);
+      })
+      .catch((error) => {
+        throw new BadRequestException(error);
+      });
+    return this.todoRepository.findOne({ where: { title: todoDto.title } });
   }
 }

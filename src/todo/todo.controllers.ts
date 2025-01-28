@@ -36,6 +36,6 @@ export class TodoController {
     @UploadedFile(new FilePipe())
     file: Express.Multer.File,
   ) {
-    return file;
+    return this.cloudinaryService.uploadImage(file);
   }
 }
