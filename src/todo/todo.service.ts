@@ -1,13 +1,18 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { TodoDto } from 'src/Dao/todoDto';
 import { Todo } from './todo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { File } from './file.entity';
+import { ITodoService } from './ITodoService.service';
 
 @Injectable()
-export class TodoService {
+export class TodoService implements ITodoService {
   constructor(
     private cloudinaryService: CloudinaryService,
     @InjectRepository(Todo)
@@ -16,11 +21,11 @@ export class TodoService {
     private dataSource: DataSource,
   ) {}
 
-  async findAll(): Promise<Todo[]> {
+  async getAll(): Promise<Todo[]> {
     return this.todoRepository.find();
   }
 
-  async create(todoDto: TodoDto): Promise<Todo> {
+  async add(todoDto: TodoDto): Promise<Todo> {
     this.dataSource
       .transaction(async (manager: EntityManager) => {
         const fileCreated = await this.cloudinaryService.uploadImage(
@@ -49,9 +54,17 @@ export class TodoService {
   async update(id: number, todoDto: TodoDto): Promise<Todo | void> {
     const todo = await this.todoRepository.findOne({ where: { id } });
     if (!todo) {
-      throw new BadRequestException('Todo not found');
+      throw new NotFoundException('Todo not found');
     }
     const todoUpdated = { ...todo, ...todoDto };
     await this.todoRepository.save(todoUpdated);
+  }
+
+  async getById(id: number): Promise<Todo | void> {
+    const todo = await this.todoRepository.findOne({ where: { id } });
+    if (!todo) {
+      throw new NotFoundException('Todo not found');
+    }
+    return todo;
   }
 }

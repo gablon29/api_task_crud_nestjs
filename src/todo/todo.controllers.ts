@@ -1,7 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
+  ParseIntPipe,
+  Patch,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -18,14 +22,9 @@ export class TodoController {
 
   @Get()
   async findAll(): Promise<Todo[]> {
-    return this.TodoServices.findAll();
+    return this.TodoServices.getAll();
   }
-
-  @Post()
-  async createTodo(@Body() todo: TodoDto): Promise<Todo> {
-    return this.TodoServices.create(todo);
-  }
-  // para la subida de archivos
+  // Add the following code to the TodoController class:
   @Post('file')
   @UseInterceptors(FileInterceptor('image'))
   async creaeteFile(
@@ -33,6 +32,23 @@ export class TodoController {
     @Body()
     body: TodoDto,
   ) {
-    return this.TodoServices.create(body);
+    return this.TodoServices.add(body);
+  }
+
+  @Get(':id')
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Todo | void> {
+    return this.TodoServices.getById(id);
+  }
+
+  @Delete(':id')
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.TodoServices.delete(id);
+  }
+  @Patch(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: TodoDto,
+  ): Promise<Todo | void> {
+    return this.TodoServices.update(id, body);
   }
 }
