@@ -34,8 +34,9 @@ export class TodoController {
   @UseInterceptors(FileInterceptor('image'))
   async creaeteFile(
     @UploadedFile(new FilePipe())
-    file: Express.Multer.File,
+    @Body()
+    body: TodoDto,
   ) {
-    return this.cloudinaryService.uploadImage(file);
+    return this.TodoServices.create(body);
   }
 }
