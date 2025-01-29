@@ -13,7 +13,6 @@ export class TodoService {
     @InjectRepository(Todo)
     private todoRepository: Repository<Todo>,
     @InjectRepository(File)
-    private readonly fileRepository: Repository<File>,
     private dataSource: DataSource,
   ) {}
 
@@ -41,5 +40,18 @@ export class TodoService {
         throw new BadRequestException(error);
       });
     return this.todoRepository.findOne({ where: { title: todoDto.title } });
+  }
+
+  async delete(id: number): Promise<void> {
+    this.todoRepository.delete(id);
+  }
+
+  async update(id: number, todoDto: TodoDto): Promise<Todo | void> {
+    const todo = await this.todoRepository.findOne({ where: { id } });
+    if (!todo) {
+      throw new BadRequestException('Todo not found');
+    }
+    const todoUpdated = { ...todo, ...todoDto };
+    await this.todoRepository.save(todoUpdated);
   }
 }

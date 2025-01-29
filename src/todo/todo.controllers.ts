@@ -10,15 +10,11 @@ import { TodoService } from './todo.service';
 import { Todo } from './todo.entity';
 import { TodoDto } from 'src/Dao/todoDto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { FilePipe } from 'src/pipes/file.pipe';
 
 @Controller('todo')
 export class TodoController {
-  constructor(
-    private readonly TodoServices: TodoService,
-    private readonly cloudinaryService: CloudinaryService,
-  ) {}
+  constructor(private readonly TodoServices: TodoService) {}
 
   @Get()
   async findAll(): Promise<Todo[]> {
