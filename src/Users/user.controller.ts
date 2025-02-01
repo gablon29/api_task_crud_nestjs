@@ -14,12 +14,14 @@ import { Response } from 'express';
 import { User } from './user.entity';
 import { UserDto } from 'src/Dao/userDto';
 import { DateAddedInterceptor } from 'src/interceptor/date-added.interceptor';
+import { AuthGuard } from 'src/Auth/auth.guard';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly UserService: UserService) {}
 
   @Get()
+  @UseGuards(AuthGuard)
   @UseInterceptors(DateAddedInterceptor)
   async getAllUsers(@Res() res: Response): Promise<void> {
     const users: User[] = await this.UserService.getAllUsers();

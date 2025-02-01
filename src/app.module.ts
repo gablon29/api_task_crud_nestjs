@@ -5,6 +5,7 @@ import { TodoModule } from './todo/todo.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import typeOrmConfig from './config/typeorm';
 import { JwtModule } from '@nestjs/jwt';
+import { AuthModule } from './Auth/auth.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { JwtModule } from '@nestjs/jwt';
     }),
     UserModule,
     TodoModule,
+    AuthModule,
   ],
   providers: [],
 })
