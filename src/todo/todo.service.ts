@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { TodoDto } from 'src/Dao/todoDto';
 import { Todo } from './todo.entity';
@@ -41,5 +41,21 @@ export class TodoService {
         throw new BadRequestException(error);
       });
     return this.todoRepository.findOne({ where: { title: todoDto.title } });
+  }
+
+  async updateTodo(id: number, todoDto: TodoDto): Promise<Todo> {
+    const todo = await this.todoRepository.findOne({ where: { id } });
+    if (!todo) {
+      throw new NotFoundException('Todo not found');
+    }
+    return this.todoRepository.save({ ...todo, ...todoDto });
+  }
+
+  async delete(id: number): Promise<void> {
+    const todo = await this.todoRepository.findOne({ where: { id } });
+    if (!todo) {
+      throw new NotFoundException('Todo not found');
+    }
+    await this.todoRepository.delete(id);
   }
 }
