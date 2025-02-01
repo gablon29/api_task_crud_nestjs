@@ -20,20 +20,13 @@ import { Response } from 'express';
 
 @Controller('todo')
 export class TodoController {
-  constructor(
-    private readonly TodoServices: TodoService,
-  ) {}
+  constructor(private readonly TodoServices: TodoService) {}
 
   @Get()
   async findAll(): Promise<Todo[]> {
-    return this.TodoServices.findAll();
+    return this.TodoServices.getAll();
   }
-
-  @Post()
-  async createTodo(@Body() todo: TodoDto): Promise<Todo> {
-    return this.TodoServices.create(todo);
-  }
-  // para la subida de archivos
+  // Add the following code to the TodoController class:
   @Post('file')
   @UseInterceptors(FileInterceptor('image'))
   async creaeteFile(
@@ -41,21 +34,41 @@ export class TodoController {
     @Body()
     body: TodoDto,
   ) {
-    return this.TodoServices.create(body);
+    return this.TodoServices.add(body);
+  }
+
+  @Get(':id')
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Todo | void> {
+    return this.TodoServices.getById(id);
+  }
+
+  @Delete(':id')
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.TodoServices.delete(id);
+  }
+  @Patch(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: TodoDto,
+  ): Promise<Todo | void> {
+    return this.TodoServices.update(id, body);
   }
 
   @Patch(':id')
   async updateTodo(
     @Body() todo: TodoDto,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<Todo> {
-    return this.TodoServices.updateTodo(id, todo);
+  ): Promise<Todo | void> {
+    return this.TodoServices.update(id, todo);
   }
 
   @Delete(':id')
-  async delete(@Param('id', ParseIntPipe) id: number, @Res() res : Response): Promise<void> {
+  async delete(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ): Promise<void> {
     this.TodoServices.delete(id);
-    res.status(200).json({message: 'Todo deleted'});
+    res.status(200).json({ message: 'Todo deleted' });
     return;
   }
 }

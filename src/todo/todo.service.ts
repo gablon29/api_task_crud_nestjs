@@ -1,27 +1,31 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { TodoDto } from 'src/Dao/todoDto';
 import { Todo } from './todo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { File } from './file.entity';
+import { ITodoService } from './ITodoService.service';
 
 @Injectable()
-export class TodoService {
+export class TodoService implements ITodoService {
   constructor(
     private cloudinaryService: CloudinaryService,
     @InjectRepository(Todo)
     private todoRepository: Repository<Todo>,
     @InjectRepository(File)
-    private readonly fileRepository: Repository<File>,
     private dataSource: DataSource,
   ) {}
 
-  async findAll(): Promise<Todo[]> {
+  async getAll(): Promise<Todo[]> {
     return this.todoRepository.find();
   }
 
-  async create(todoDto: TodoDto): Promise<Todo> {
+  async add(todoDto: TodoDto): Promise<Todo> {
     this.dataSource
       .transaction(async (manager: EntityManager) => {
         const fileCreated = await this.cloudinaryService.uploadImage(
@@ -43,19 +47,24 @@ export class TodoService {
     return this.todoRepository.findOne({ where: { title: todoDto.title } });
   }
 
-  async updateTodo(id: number, todoDto: TodoDto): Promise<Todo> {
-    const todo = await this.todoRepository.findOne({ where: { id } });
-    if (!todo) {
-      throw new NotFoundException('Todo not found');
-    }
-    return this.todoRepository.save({ ...todo, ...todoDto });
+  async delete(id: number): Promise<void> {
+    this.todoRepository.delete(id);
   }
 
-  async delete(id: number): Promise<void> {
+  async update(id: number, todoDto: TodoDto): Promise<Todo | void> {
     const todo = await this.todoRepository.findOne({ where: { id } });
     if (!todo) {
       throw new NotFoundException('Todo not found');
     }
-    await this.todoRepository.delete(id);
+    const todoUpdated = { ...todo, ...todoDto };
+    await this.todoRepository.save(todoUpdated);
+  }
+
+  async getById(id: number): Promise<Todo | void> {
+    const todo = await this.todoRepository.findOne({ where: { id } });
+    if (!todo) {
+      throw new NotFoundException('Todo not found');
+    }
+    return todo;
   }
 }
