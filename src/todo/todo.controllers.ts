@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Res,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -15,6 +16,7 @@ import { Todo } from './todo.entity';
 import { TodoDto } from 'src/Dao/todoDto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FilePipe } from 'src/pipes/file.pipe';
+import { Response } from 'express';
 
 @Controller('todo')
 export class TodoController {
@@ -50,5 +52,23 @@ export class TodoController {
     @Body() body: TodoDto,
   ): Promise<Todo | void> {
     return this.TodoServices.update(id, body);
+  }
+
+  @Patch(':id')
+  async updateTodo(
+    @Body() todo: TodoDto,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Todo | void> {
+    return this.TodoServices.update(id, todo);
+  }
+
+  @Delete(':id')
+  async delete(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: Response,
+  ): Promise<void> {
+    this.TodoServices.delete(id);
+    res.status(200).json({ message: 'Todo deleted' });
+    return;
   }
 }
