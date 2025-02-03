@@ -12,6 +12,11 @@ export class AuthService {
     if (!validateToken) {
       return false;
     }
+    validateToken.then((res) => {
+      res.iat = new Date(res.iat * 1000);
+      res.exp = new Date(res.exp * 1000);
+    });
+    console.log(validateToken);
     return true;
   }
 }
