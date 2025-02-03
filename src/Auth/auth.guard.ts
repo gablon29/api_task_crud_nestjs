@@ -25,7 +25,6 @@ export class AuthGuard implements CanActivate {
     if (!validate) {
       throw new UnauthorizedException('Invalid token');
     }
-    console.log('Token validated');
     return true;
   }
 }
