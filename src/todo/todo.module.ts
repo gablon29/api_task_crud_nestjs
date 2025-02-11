@@ -3,7 +3,7 @@ import { TodoService } from './todo.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Todo } from './todo.entity';
 import { File } from './file.entity';
-import { TodoController } from './todo.controllers';
+import { TodoController } from './todo.controller';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 
 @Module({
