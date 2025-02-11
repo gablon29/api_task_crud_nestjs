@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Roles } from './roles.enum';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +16,7 @@ export class AuthService {
     validateToken.then((res) => {
       res.iat = new Date(res.iat * 1000);
       res.exp = new Date(res.exp * 1000);
+      res.roles = [Roles.ADMIN];
     });
     console.log(validateToken);
     return true;

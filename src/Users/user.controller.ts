@@ -15,6 +15,9 @@ import { User } from './user.entity';
 import { UserDto } from 'src/Dao/userDto';
 import { DateAddedInterceptor } from 'src/interceptor/date-added.interceptor';
 import { AuthGuard } from 'src/Auth/auth.guard';
+import { Role } from 'src/decoretor/roles.decoretor';
+import { Roles } from 'src/Auth/roles.enum';
+import { RolesGuard } from 'src/Auth/role.guard';
 
 @Controller('user')
 export class UserController {
@@ -34,6 +37,14 @@ export class UserController {
   ): Promise<void> {
     const user = await this.UserService.getUserByName(username);
     res.status(200).json(user);
+  }
+
+  @Get('admin')
+  // decorador personalizado
+  @Role(Roles.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  getAdmin(): string {
+    return 'Admin';
   }
   @Post()
   async createUser(@Res() res: Response, @Body() user: UserDto): Promise<void> {
