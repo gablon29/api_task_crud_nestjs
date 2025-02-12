@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { Roles } from './roles.enum';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JsonWebTokenError, JwtService } from '@nestjs/jwt';
+import { Role } from './roles.enum';
 
 @Injectable()
 export class AuthService {
@@ -9,16 +9,17 @@ export class AuthService {
   async validateToken(token: string): Promise<boolean> {
     // Here you should validate the token
     const secret = process.env.JWT_SECRET;
-    const validateToken = this.jwtService.verifyAsync(token, { secret });
-    if (!validateToken) {
-      return false;
+    try {
+      const decoded = await this.jwtService.verify(token, { secret });
+      decoded.roles = decoded.roles || [Role.USER];
+      decoded.iat = new Date(decoded.iat * 1000);
+      decoded.exp = new Date(decoded.exp * 1000);
+      return decoded;
+    } catch (error) {
+      if (error instanceof JsonWebTokenError) {
+        throw new UnauthorizedException('Invalid token');
+      }
+      throw new UnauthorizedException('token verify failed');
     }
-    validateToken.then((res) => {
-      res.iat = new Date(res.iat * 1000);
-      res.exp = new Date(res.exp * 1000);
-      res.roles = [Roles.ADMIN];
-    });
-    console.log(validateToken);
-    return true;
   }
 }

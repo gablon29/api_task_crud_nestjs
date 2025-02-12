@@ -4,16 +4,13 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(private readonly authService: AuthService) {}
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = request.headers.authorization?.split(' ')[1];
 
@@ -21,10 +18,12 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('Token not found');
     }
 
-    const validate = this.authService.validateToken(token);
-    if (!validate) {
-      throw new UnauthorizedException('Invalid token');
+    try {
+      const user = await this.authService.validateToken(token);
+      request.user = user;
+      return true;
+    } catch (error) {
+      throw new UnauthorizedException(error.message);
     }
-    return true;
   }
 }

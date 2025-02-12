@@ -3,6 +3,9 @@ import {
   IsNotEmpty,
   IsStrongPassword,
   IsEmail,
+  IsEmpty,
+  IsBoolean,
+  IsOptional,
 } from 'class-validator';
 
 export class UserDto {
@@ -13,5 +16,9 @@ export class UserDto {
   email: string;
   @IsStrongPassword()
   password: string;
+  @IsBoolean()
+  @IsOptional()
+  isAdmin: boolean;
+  @IsOptional()
   todo?: number;
 }
