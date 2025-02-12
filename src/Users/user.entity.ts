@@ -7,8 +7,10 @@ export class User {
   id: string;
   @Column({ unique: true })
   name: string;
-  @Column()
+  @Column({ unique: true })
   email: string;
+  @Column({ default: false })
+  isAdmin: boolean;
   @Column()
   password: string;
   @OneToMany(() => Todo, (todo) => todo.user)

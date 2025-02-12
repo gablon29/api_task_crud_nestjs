@@ -11,6 +11,8 @@ import { UserDto } from 'src/Dao/userDto';
 import * as bcrypt from 'bcryptjs';
 import { config as dotenvConfig } from 'dotenv';
 import { JwtService } from '@nestjs/jwt';
+import { Role } from 'src/Auth/roles.enum';
+import { UserAuthDto } from 'src/Dao/UserAuthDto';
 
 dotenvConfig({ path: '.env' });
 const saltRounds = parseInt(process.env.BCRYPT_SALT, 10);
@@ -47,6 +49,7 @@ export class UserService {
       sub: newUser.id,
       id: newUser.id,
       email: newUser.email,
+      roles: [newUser.isAdmin ? Role.ADMIN : Role.USER],
     });
     const userSave = await this.userRepository.save(newUser);
     return {
@@ -55,15 +58,23 @@ export class UserService {
     };
   }
   //* Validate user
-  async validateUser(name: string, password: string): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { name } });
-    if (user) {
-      const isPasswordMatch = await bcrypt.compare(password, user.password);
-      if (isPasswordMatch) {
-        return user;
-      }
+  async validateUser(userAuthDto: UserAuthDto): Promise<{ token: string }> {
+    const { email, password } = userAuthDto;
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
-    return null;
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    if (!isPasswordMatch) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      roles: [user.isAdmin ? Role.ADMIN : Role.USER],
+    };
+    const token = this.jwtService.sign(payload);
+    return { token };
   }
   //* Update user
   async updateUser(id: string, user: UserDto): Promise<User> {

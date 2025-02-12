@@ -15,16 +15,16 @@ import { User } from './user.entity';
 import { UserDto } from 'src/Dao/userDto';
 import { DateAddedInterceptor } from 'src/interceptor/date-added.interceptor';
 import { AuthGuard } from 'src/Auth/auth.guard';
-import { Role } from 'src/decoretor/roles.decoretor';
-import { Roles } from 'src/Auth/roles.enum';
+import { Roles } from 'src/decoretor/roles.decoretor';
+import { Role } from 'src/Auth/roles.enum';
 import { RolesGuard } from 'src/Auth/role.guard';
+import { UserAuthDto } from 'src/Dao/UserAuthDto';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly UserService: UserService) {}
 
   @Get()
-  @UseGuards(AuthGuard)
   @UseInterceptors(DateAddedInterceptor)
   async getAllUsers(@Res() res: Response): Promise<void> {
     const users: User[] = await this.UserService.getAllUsers();
@@ -41,10 +41,12 @@ export class UserController {
 
   @Get('admin')
   // decorador personalizado
-  @Role(Roles.ADMIN)
+  @Roles(Role.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
-  getAdmin(): string {
-    return 'Admin';
+  async getAdmin(@Res() res: Response): Promise<void> {
+    res.status(200).json({
+      message: 'Admin',
+    });
   }
   @Post()
   async createUser(@Res() res: Response, @Body() user: UserDto): Promise<void> {
@@ -62,5 +64,16 @@ export class UserController {
   ): Promise<void> {
     const userUpdated = await this.UserService.updateUser(id, user);
     res.status(200).json(userUpdated);
+  }
+
+  @Get('login')
+  async login(
+    @Body() userAuthDto: UserAuthDto,
+    @Res() res: Response,
+  ): Promise<void> {
+    const user = await this.UserService.validateUser(userAuthDto);
+    res.status(200).json({
+      message: user,
+    });
   }
 }
