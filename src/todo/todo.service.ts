@@ -6,7 +6,7 @@ import {
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { TodoDto } from 'src/Dao/todoDto';
 import { Todo } from './todo.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { File } from './file.entity';
 import { ITodoService } from './ITodoService.service';
@@ -18,35 +18,42 @@ export class TodoService implements ITodoService {
     @InjectRepository(Todo)
     private todoRepository: Repository<Todo>,
     @InjectRepository(File)
-    private dataSource: DataSource,
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
   ) {}
 
   async getAll(): Promise<Todo[]> {
     return this.todoRepository.find();
   }
 
-  async add(todoDto: TodoDto): Promise<Todo> {
-    this.dataSource
-      .transaction(async (manager: EntityManager) => {
-        const fileCreated = await this.cloudinaryService.uploadImage(
-          todoDto.file,
-        );
-        const fileRegister: File = await manager.save(File, {
-          name: fileCreated.original_filename,
-          data_url: fileCreated.url,
+  async add(todoDto: TodoDto, file: Express.Multer.File): Promise<Todo> {
+    if (file) {
+      await this.dataSource.manager
+        .transaction(async (manager: EntityManager) => {
+          const fileCreated = await this.cloudinaryService.uploadImage(file);
+          const fileRegister: File = await manager.save(File, {
+            name: fileCreated.original_filename,
+            data_url: fileCreated.url,
+          });
+          const todo = manager.create(Todo, {
+            ...todoDto,
+            files: [fileRegister],
+          });
+          await manager.save(Todo, todo);
+        })
+        .catch((error) => {
+          throw new BadRequestException(error);
         });
-        const todo = manager.create(Todo, {
-          ...todoDto,
-          files: [fileRegister],
-        });
-        await manager.save(Todo, todo);
-      })
-      .catch((error) => {
-        throw new BadRequestException(error);
+      return this.todoRepository.findOne({
+        where: { title: todoDto.title },
+        relations: ['files'],
       });
-    return this.todoRepository.findOne({ where: { title: todoDto.title } });
+    } else {
+      const todo = this.todoRepository.create(todoDto);
+      const todoRegister = await this.todoRepository.save(todo);
+      return todoRegister;
+    }
   }
-
   async delete(id: number): Promise<void> {
     this.todoRepository.delete(id);
   }

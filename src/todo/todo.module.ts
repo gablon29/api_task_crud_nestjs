@@ -5,10 +5,11 @@ import { Todo } from './todo.entity';
 import { File } from './file.entity';
 import { TodoController } from './todo.controller';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
+import { AuthService } from 'src/Auth/auth.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Todo, File]), CloudinaryModule],
-  providers: [TodoService],
+  providers: [TodoService, AuthService],
   controllers: [TodoController],
 })
 export class TodoModule {}

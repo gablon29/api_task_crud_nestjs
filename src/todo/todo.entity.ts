@@ -12,9 +12,11 @@ import { File } from './file.entity';
 export class Todo {
   @PrimaryGeneratedColumn()
   id: number;
-  @Column('text')
+  @Column('text', { nullable: false })
   title: string;
-  @Column('boolean')
+  @Column('text', { nullable: true })
+  description: string;
+  @Column('boolean', { default: false })
   completed: boolean;
   @ManyToOne(() => User, (user) => user.todo_id)
   user: User;

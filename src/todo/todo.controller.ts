@@ -9,6 +9,7 @@ import {
   Post,
   Res,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { TodoService } from './todo.service';
@@ -17,6 +18,7 @@ import { TodoDto } from 'src/Dao/todoDto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FilePipe } from 'src/pipes/file.pipe';
 import { Response } from 'express';
+import { AuthGuard } from 'src/Auth/auth.guard';
 
 @Controller('todo')
 export class TodoController {
@@ -28,13 +30,14 @@ export class TodoController {
   }
   // Add the following code to the TodoController class:
   @Post('file')
-  @UseInterceptors(FileInterceptor('image'))
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('file'))
   async creaeteFile(
-    @UploadedFile(new FilePipe())
+    @UploadedFile(new FilePipe()) file: Express.Multer.File,
     @Body()
     body: TodoDto,
   ) {
-    return this.TodoServices.add(body);
+    return this.TodoServices.add(body, file);
   }
 
   @Get(':id')
