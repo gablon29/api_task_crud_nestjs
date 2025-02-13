@@ -1,4 +1,4 @@
-import { IsString, Length } from 'class-validator';
+import { IsOptional, IsString, Length } from 'class-validator';
 
 export class TodoDto {
   @IsString()
@@ -7,5 +7,6 @@ export class TodoDto {
   @IsString()
   @Length(1, 100)
   description: string;
-  file?: Express.Multer.File;
+  @IsOptional()
+  completed: boolean;
 }
