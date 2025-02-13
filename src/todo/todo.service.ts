@@ -6,7 +6,7 @@ import {
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { TodoDto } from 'src/Dao/todoDto';
 import { Todo } from './todo.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { File } from './file.entity';
 import { ITodoService } from './ITodoService.service';
@@ -18,7 +18,8 @@ export class TodoService implements ITodoService {
     @InjectRepository(Todo)
     private todoRepository: Repository<Todo>,
     @InjectRepository(File)
-    private dataSource: DataSource,
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
   ) {}
 
   async getAll(): Promise<Todo[]> {
@@ -27,7 +28,7 @@ export class TodoService implements ITodoService {
 
   async add(todoDto: TodoDto, file: Express.Multer.File): Promise<Todo> {
     if (file) {
-      this.dataSource
+      await this.dataSource.manager
         .transaction(async (manager: EntityManager) => {
           const fileCreated = await this.cloudinaryService.uploadImage(file);
           const fileRegister: File = await manager.save(File, {
@@ -43,13 +44,16 @@ export class TodoService implements ITodoService {
         .catch((error) => {
           throw new BadRequestException(error);
         });
-      return this.todoRepository.findOne({ where: { title: todoDto.title } });
+      return this.todoRepository.findOne({
+        where: { title: todoDto.title },
+        relations: ['files'],
+      });
+    } else {
+      const todo = this.todoRepository.create(todoDto);
+      const todoRegister = await this.todoRepository.save(todo);
+      return todoRegister;
     }
-    const todo = this.todoRepository.create(todoDto);
-    const todoRegister = await this.todoRepository.save(todo);
-    return todoRegister;
   }
-
   async delete(id: number): Promise<void> {
     this.todoRepository.delete(id);
   }
