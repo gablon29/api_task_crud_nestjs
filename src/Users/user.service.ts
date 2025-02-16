@@ -47,7 +47,6 @@ export class UserService {
     });
     const token = this.jwtService.sign({
       sub: newUser.id,
-      id: newUser.id,
       email: newUser.email,
       roles: [newUser.isAdmin ? Role.ADMIN : Role.USER],
     });
