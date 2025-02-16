@@ -5,12 +5,13 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   Res,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { User } from './user.entity';
 import { UserDto } from 'src/Dao/userDto';
 import { DateAddedInterceptor } from 'src/interceptor/date-added.interceptor';
@@ -37,6 +38,12 @@ export class UserController {
   ): Promise<void> {
     const user = await this.UserService.getUserByName(username);
     res.status(200).json(user);
+  }
+
+  @Get('me')
+  getUserMeAuth0(@Req() req: Request): string {
+    console.log(JSON.stringify(req.oidc.accessToken));
+    return JSON.stringify(req.oidc.user);
   }
 
   @Get('admin')

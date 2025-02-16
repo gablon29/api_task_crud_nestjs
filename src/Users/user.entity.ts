@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  DeleteDateColumn,
+} from 'typeorm';
 import { Todo } from 'src/todo/todo.entity';
 
 @Entity()
@@ -13,6 +19,8 @@ export class User {
   isAdmin: boolean;
   @Column()
   password: string;
+  @DeleteDateColumn()
+  deletedAt: Date;
   @OneToMany(() => Todo, (todo) => todo.user)
   todo_id: Todo[];
 }

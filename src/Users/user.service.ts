@@ -98,6 +98,9 @@ export class UserService {
   }
   //* Delete user
   async deleteUser(id: string): Promise<void> {
-    await this.userRepository.delete(id);
+    const result = await this.userRepository.softDelete({ id });
+    if (result.affected === 0) {
+      throw new NotFoundException('User not found');
+    }
   }
 }
