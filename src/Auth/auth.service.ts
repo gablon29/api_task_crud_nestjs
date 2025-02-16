@@ -6,7 +6,7 @@ import { Role } from './roles.enum';
 export class AuthService {
   constructor(private readonly jwtService: JwtService) {}
 
-  async validateToken(token: string): Promise<boolean> {
+  public async validateToken(token: string): Promise<boolean> {
     // Here you should validate the token
     const secret = process.env.JWT_SECRET;
     try {

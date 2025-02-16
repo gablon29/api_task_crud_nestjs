@@ -44,7 +44,7 @@ export class UserController {
 
   @Get('me')
   public async getUserMeAuth0(@Req() req: Request): Promise<string> {
-    return JSON.stringify(req.oidc.user);
+    return JSON.stringify(`User: ${req.oidc.user.email}`);
   }
 
   @Get('admin')
