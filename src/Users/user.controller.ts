@@ -27,12 +27,14 @@ export class UserController {
 
   @Get()
   @UseInterceptors(DateAddedInterceptor)
-  async getAllUsers(@Res() res: Response): Promise<void> {
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  public async getAllUsers(@Res() res: Response): Promise<void> {
     const users: User[] = await this.UserService.getAllUsers();
     res.status(200).json(users);
   }
   @Get('getOne')
-  async getOne(
+  public async getOne(
     @Query('name') username: string,
     @Res() res: Response,
   ): Promise<void> {
@@ -41,9 +43,8 @@ export class UserController {
   }
 
   @Get('me')
-  getUserMeAuth0(@Req() req: Request): string {
-    console.log(JSON.stringify(req.oidc.accessToken));
-    return JSON.stringify(req.oidc.user);
+  public async getUserMeAuth0(@Req() req: Request): Promise<string> {
+    return JSON.stringify(`User: ${req.oidc.user.email}`);
   }
 
   @Get('admin')
