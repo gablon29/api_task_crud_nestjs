@@ -25,14 +25,14 @@ export class TodoController {
   constructor(private readonly TodoServices: TodoService) {}
 
   @Get()
-  async findAll(): Promise<Todo[]> {
+  public async findAll(): Promise<Todo[]> {
     return this.TodoServices.getAll();
   }
   // Add the following code to the TodoController class:
   @Post('file')
   @UseGuards(AuthGuard)
   @UseInterceptors(FileInterceptor('file'))
-  async creaeteFile(
+  public async creaeteFile(
     @UploadedFile(new FilePipe()) file: Express.Multer.File,
     @Body()
     body: TodoDto,
@@ -41,16 +41,18 @@ export class TodoController {
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Todo | void> {
+  public async findOne(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Todo | void> {
     return this.TodoServices.getById(id);
   }
 
   @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.TodoServices.delete(id);
   }
   @Patch(':id')
-  async update(
+  public async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: TodoDto,
   ): Promise<Todo | void> {
@@ -58,7 +60,7 @@ export class TodoController {
   }
 
   @Patch(':id')
-  async updateTodo(
+  public async updateTodo(
     @Body() todo: TodoDto,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Todo | void> {
@@ -66,7 +68,7 @@ export class TodoController {
   }
 
   @Delete(':id')
-  async delete(
+  public async delete(
     @Param('id', ParseIntPipe) id: number,
     @Res() res: Response,
   ): Promise<void> {
