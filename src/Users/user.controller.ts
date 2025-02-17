@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
   Patch,
   Post,
   Query,
@@ -20,6 +22,7 @@ import { Roles } from 'src/decoretor/roles.decoretor';
 import { Role } from 'src/Auth/roles.enum';
 import { RolesGuard } from 'src/Auth/role.guard';
 import { UserAuthDto } from 'src/Dao/UserAuthDto';
+import { ApiResponse } from 'src/response/ApiResponse';
 
 @Controller('user')
 export class UserController {
@@ -29,22 +32,40 @@ export class UserController {
   @UseInterceptors(DateAddedInterceptor)
   @Roles(Role.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
-  public async getAllUsers(@Res() res: Response): Promise<void> {
+  public async getAllUsers(): Promise<ApiResponse<User[]>> {
     const users: User[] = await this.UserService.getAllUsers();
-    res.status(200).json(users);
+    if (!users.length) {
+      throw new HttpException(
+        new ApiResponse<User[]>(false, 'Users not found', null),
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return new ApiResponse<User[]>(true, 'Users found', users);
   }
+
   @Get('getOne')
   public async getOne(
     @Query('name') username: string,
-    @Res() res: Response,
-  ): Promise<void> {
+  ): Promise<ApiResponse<User>> {
     const user = await this.UserService.getUserByName(username);
-    res.status(200).json(user);
+    if (!user) {
+      throw new HttpException(
+        new ApiResponse<User>(false, 'User not found', null),
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return new ApiResponse<User>(true, 'User found', user);
   }
 
   @Get('me')
-  public async getUserMeAuth0(@Req() req: Request): Promise<string> {
-    return JSON.stringify(`User: ${req.oidc.user.email}`);
+  public async getUserMeAuth0(
+    @Req() req: Request,
+  ): Promise<ApiResponse<string>> {
+    return new ApiResponse(
+      true,
+      JSON.stringify(`User: ${req.oidc.user.email}`),
+      null,
+    );
   }
 
   @Get('admin')
@@ -56,32 +77,45 @@ export class UserController {
       message: 'Admin',
     });
   }
+
   @Post()
-  async createUser(@Res() res: Response, @Body() user: UserDto): Promise<void> {
-    const userRegister = await this.UserService.createUser(user);
-    res.status(201).json({
-      message: 'User created',
-      user: userRegister,
-    });
+  async createUser(@Body() user: UserDto): Promise<ApiResponse<string>> {
+    try {
+      const userRegister = await this.UserService.createUser(user);
+      return new ApiResponse<string>(true, 'User created', userRegister.token);
+    } catch (error) {
+      throw new HttpException(
+        new ApiResponse<string>(false, error.message, null),
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
   @Patch('update')
   async updateUser(
     @Query('id') id: string,
     @Body() user: UserDto,
-    @Res() res: Response,
-  ): Promise<void> {
-    const userUpdated = await this.UserService.updateUser(id, user);
-    res.status(200).json(userUpdated);
+  ): Promise<ApiResponse<User>> {
+    try {
+      const userUpdated = await this.UserService.updateUser(id, user);
+      return new ApiResponse<User>(true, 'User updated', userUpdated);
+    } catch (error) {
+      throw new HttpException(
+        new ApiResponse<User>(false, error.message, null),
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Get('login')
-  async login(
-    @Body() userAuthDto: UserAuthDto,
-    @Res() res: Response,
-  ): Promise<void> {
-    const user = await this.UserService.validateUser(userAuthDto);
-    res.status(200).json({
-      message: user,
-    });
+  async login(@Body() userAuthDto: UserAuthDto): Promise<ApiResponse<string>> {
+    try {
+      const user = await this.UserService.validateUser(userAuthDto);
+      return new ApiResponse<string>(true, 'User logged', user.token);
+    } catch (error) {
+      throw new HttpException(
+        new ApiResponse<string>(false, error.message, null),
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
   }
 }
