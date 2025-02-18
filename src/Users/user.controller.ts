@@ -35,12 +35,9 @@ export class UserController {
   public async getAllUsers(): Promise<ApiResponse<User[]>> {
     const users: User[] = await this.UserService.getAllUsers();
     if (!users.length) {
-      throw new HttpException(
-        new ApiResponse<User[]>(false, 'Users not found', null),
-        HttpStatus.NOT_FOUND,
-      );
+      throw new HttpException('Users not found', HttpStatus.NOT_FOUND);
     }
-    return new ApiResponse<User[]>(true, 'Users found', users);
+    return new ApiResponse<User[]>(HttpStatus.OK, true, 'Users found', users);
   }
 
   @Get('getOne')
@@ -49,12 +46,9 @@ export class UserController {
   ): Promise<ApiResponse<User>> {
     const user = await this.UserService.getUserByName(username);
     if (!user) {
-      throw new HttpException(
-        new ApiResponse<User>(false, 'User not found', null),
-        HttpStatus.NOT_FOUND,
-      );
+      throw new HttpException("User doesn't exist", HttpStatus.NOT_FOUND);
     }
-    return new ApiResponse<User>(true, 'User found', user);
+    return new ApiResponse<User>(HttpStatus.OK, true, 'User found', user);
   }
 
   @Get('me')
@@ -62,6 +56,7 @@ export class UserController {
     @Req() req: Request,
   ): Promise<ApiResponse<string>> {
     return new ApiResponse(
+      HttpStatus.OK,
       true,
       JSON.stringify(`User: ${req.oidc.user.email}`),
       null,
@@ -82,12 +77,14 @@ export class UserController {
   async createUser(@Body() user: UserDto): Promise<ApiResponse<string>> {
     try {
       const userRegister = await this.UserService.createUser(user);
-      return new ApiResponse<string>(true, 'User created', userRegister.token);
-    } catch (error) {
-      throw new HttpException(
-        new ApiResponse<string>(false, error.message, null),
-        HttpStatus.INTERNAL_SERVER_ERROR,
+      return new ApiResponse<string>(
+        HttpStatus.CREATED,
+        true,
+        'User created',
+        userRegister.token,
       );
+    } catch (error) {
+      throw new HttpException("User doesn't exist", HttpStatus.NOT_FOUND);
     }
   }
   @Patch('update')
@@ -97,12 +94,14 @@ export class UserController {
   ): Promise<ApiResponse<User>> {
     try {
       const userUpdated = await this.UserService.updateUser(id, user);
-      return new ApiResponse<User>(true, 'User updated', userUpdated);
-    } catch (error) {
-      throw new HttpException(
-        new ApiResponse<User>(false, error.message, null),
-        HttpStatus.INTERNAL_SERVER_ERROR,
+      return new ApiResponse<User>(
+        HttpStatus.OK,
+        true,
+        'User updated',
+        userUpdated,
       );
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
     }
   }
 
@@ -110,12 +109,14 @@ export class UserController {
   async login(@Body() userAuthDto: UserAuthDto): Promise<ApiResponse<string>> {
     try {
       const user = await this.UserService.validateUser(userAuthDto);
-      return new ApiResponse<string>(true, 'User logged', user.token);
-    } catch (error) {
-      throw new HttpException(
-        new ApiResponse<string>(false, error.message, null),
-        HttpStatus.UNAUTHORIZED,
+      return new ApiResponse<string>(
+        HttpStatus.ACCEPTED,
+        true,
+        'User logged',
+        user.token,
       );
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNAUTHORIZED);
     }
   }
 }
